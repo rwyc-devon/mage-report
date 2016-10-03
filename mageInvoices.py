@@ -14,9 +14,11 @@ import re
 
 def config():
     home=os.getenv("HOME")
-    home="" if home is None else home
+    home="/dev/null" if home is None else home #/dev/null ought to make it fail
+    xdg=os.getenv("XDG_CONFIG_HOME")
+    xdg=home+"/.config" if xdg is None else xdg
     configFiles=[
-        home+"/.config/magento-client/config.json",
+        xdg+"/magento-client/config.json",
         "/etc/magento-client/config.json"
     ]
     for f in configFiles:
