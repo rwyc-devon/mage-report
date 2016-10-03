@@ -26,7 +26,7 @@ class Invoice:
         self.total    = Decimal(data["base_grand_total"])
         self.id       = data["increment_id"]
         #calculate PST
-        self.pst      = 0
+        self.pst      = Decimal(0)
         order         = mage.getOrder(data["order_increment_id"])
         if(order["shipping_address"] and order["shipping_address"]["region"] == "Manitoba"):
             for i in data["items"]:
