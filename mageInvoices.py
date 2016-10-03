@@ -51,12 +51,12 @@ def invoiceTable(title, invoices):
         table.append([
             i.id,
             i.localTimeStr,
-            round(i.subtotal, 2),
+            round(i.preTax, 2),
             round(i.pst, 2),
             round(i.gst, 2),
             round(i.total, 2)
             ])
-        subtotal+=i.subtotal
+        subtotal+=i.preTax
         pst+=i.pst
         gst+=i.gst
         total+=i.total

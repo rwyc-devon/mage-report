@@ -19,8 +19,8 @@ class Invoice:
         self.date     = gmt.localize(datetime.strptime(data["created_at"], "%Y-%m-%d %H:%M:%S"))
         self.tz       = mage.tz
         #Pretty basic fields
-        self.subtotal = Decimal(data["subtotal"])
-        self.shipping = Decimal(data["shipping_amount"])
+        self.subtotal = Decimal(data["base_subtotal"])
+        self.shipping = Decimal(data["base_shipping_amount"])
         self.preTax   = self.subtotal+self.shipping
         self.tax      = Decimal(data["base_tax_amount"])
         self.total    = Decimal(data["base_grand_total"])
