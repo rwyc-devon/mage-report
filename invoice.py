@@ -41,12 +41,13 @@ class Invoice:
 
     def negate(self):
         """Negate all the money amounts (for example if this is a refund"""
-        self.subtotal=self.subtotal.copy_negate()
-        self.shipping=self.shipping.copy_negate()
-        self.preTax=self.preTax.copy_negate()
-        self.tax=self.tax.copy_negate()
-        self.pst=self.pst.copy_negate()
-        self.gst=self.gst.copy_negate()
+        self.subtotal   = self.subtotal.copy_negate()
+        self.shipping   = self.shipping.copy_negate()
+        self.preTax     = self.preTax.copy_negate()
+        self.tax        = self.tax.copy_negate()
+        self.pst        = self.pst.copy_negate()
+        self.gst        = self.gst.copy_negate()
+        self.total      = self.total.copy_negate()
     
     @property
     def localDT(self):
