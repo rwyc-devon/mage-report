@@ -4,6 +4,7 @@ import pytz
 from magento import MagentoAPI
 from invoice import Invoice
 import progress.bar
+import sys
 class Mage:
     def __init__(self, host, port, user, key, pst, gst, timezone):
         self.api=MagentoAPI(host, port, user, key)
@@ -39,7 +40,8 @@ class Mage:
         """
         out=[]
         if(showProgress):
-            print("Loading Invoice List...")
+            sys.stderr.write("Downloading Invoice List...\n")
+            sys.stderr.flush()
         invoices=self.getInvoiceList(start, end)
         creditmemos=self.getCreditmemoList(start, end)
         if(showProgress):

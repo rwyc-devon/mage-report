@@ -24,6 +24,7 @@ class Invoice:
         self.preTax   = self.subtotal+self.shipping
         self.tax      = Decimal(data["base_tax_amount"])
         self.total    = Decimal(data["base_grand_total"])
+        self.id       = data["increment_id"]
         #calculate PST
         self.pst      = 0
         order         = mage.getOrder(data["order_increment_id"])
@@ -35,6 +36,8 @@ class Invoice:
         #negate everything if this is a refund
         if(refund):
             self.negate()
+    def __cmp__(self, other):
+        return cmp(self.date, other.date)
 
     def negate(self):
         """Negate all the money amounts (for example if this is a refund"""
