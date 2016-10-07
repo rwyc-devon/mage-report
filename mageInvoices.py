@@ -42,7 +42,7 @@ def groupInvoicesByDate(invoices):
     return out
 
 def invoiceTable(title, invoices):
-    table=[["ID", "Time", "Subtotal", "PST", "GST", "Total"]]
+    table=[["ID", "Time", "Subtotal", "PST", "GST", "Total", "Customer"]]
     subtotal=0
     pst=0
     gst=0
@@ -54,7 +54,8 @@ def invoiceTable(title, invoices):
             round(i.preTax, 2),
             round(i.pst, 2),
             round(i.gst, 2),
-            round(i.total, 2)
+            round(i.total, 2),
+            i.customer
             ])
         subtotal+=i.preTax
         pst+=i.pst
@@ -81,7 +82,7 @@ if(len(sys.argv)>1):
             datetime(year, month, 1, 0,0,0),
             datetime(
                 year if month<12 else year+1,
-                (month+1)%12,
+                ((month)%12)+1,
                 1, 0,0,0
                 )
             )

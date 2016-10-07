@@ -14,6 +14,8 @@ class Invoice:
         mage   -- a Mage instance, used to look up additional information needed to calculate taxes
         refund -- whether this is a refund (creditmemo), in which case all the amounts are negated
         """
+        #get order (needed for customer info and, bizarrely, tax info (province)
+        order         = mage.getOrder(data["order_increment_id"])
         #set date
         gmt           = pytz.timezone("GMT")
         self.date     = gmt.localize(datetime.strptime(data["created_at"], "%Y-%m-%d %H:%M:%S"))
@@ -26,9 +28,15 @@ class Invoice:
         self.tax      = Decimal(data["base_tax_amount"])
         self.total    = Decimal(data["base_grand_total"])
         self.id       = data["increment_id"]
+        #set customer name
+        self.customer=""
+        if "customer_firstname" in order and "customer_lastname" in order:
+            self.customer= \
+                (order["customer_firstname"] or "") + \
+                " " + \
+                (order["customer_lastname"] or "") \
         #calculate PST
         self.pst      = Decimal(0)
-        order         = mage.getOrder(data["order_increment_id"])
         if(order["shipping_address"] and order["shipping_address"]["region"] == "Manitoba"):
             for i in data["items"]:
                 self.pst+=Item(i, pst=pst, gst=gst).pst
