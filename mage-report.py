@@ -30,7 +30,7 @@ def config():
     for f in configFiles:
         print(f)
     sys.exit(1)
-    return {}
+
 config=config()
 localTZ=pytz.timezone(config["timezone"])
 gmt=pytz.timezone("GMT")
