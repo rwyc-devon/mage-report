@@ -19,8 +19,8 @@ def config():
     xdg=home+"/.config" if xdg is None else xdg
     configFiles=[
         "config.json",
-        xdg+"/magento-client/config.json",
-        "/etc/magento-client/config.json",
+        xdg+"/mage-report/config.json",
+        "/etc/mage-report/config.json",
     ]
     for f in configFiles:
         if(os.path.isfile(f)):
