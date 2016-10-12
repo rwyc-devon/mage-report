@@ -81,6 +81,13 @@ class Invoice:
         """
         return self.date.astimezone(self.tz).strftime("%H:%M:%S")
 
+    @property
+    def dayOfMonth(self):
+        """
+        Return an integer representing the day of month for this invoice
+        """
+        return self.date.day
+
 class Item:
     def __init__(self, data, pst, gst):
         self.tax=Decimal(data["base_tax_amount"] or 0, 4)

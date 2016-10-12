@@ -33,43 +33,53 @@ pst=Decimal(config["taxes"]["PST"])
 gst=Decimal(config["taxes"]["GST"])
 mage=None
 
-def groupInvoicesByDate(invoices):
+def groupInvoicesBy(invoices, attr="localDateStr"):
     out={}
     for i in invoices:
-        if(not i.localDateStr in out):
-            out[i.localDateStr]=[]
-        out[i.localDateStr].append(i)
+        key=getattr(i, attr)
+        if(not key in out):
+            out[key]=InvoiceGroup()
+        out[key].addInvoice(i)
     return out
 
-def invoiceTable(title, invoices):
-    table=[["ID", "Time", "Subtotal", "PST", "GST", "Total", "Customer"]]
-    subtotal=0
-    pst=0
-    gst=0
-    total=0
-    for i in invoices:
+class InvoiceGroup:
+    def __init__(self, invoices=[]):
+        self.subtotal=0
+        self.pst=0
+        self.gst=0
+        self.total=0
+        self.invoices=[]
+        for i in invoices:
+            self.addInvoice(i)
+
+    def addInvoice(self, invoice):
+        self.subtotal += invoice.preTax
+        self.pst      += invoice.pst
+        self.gst      += invoice.gst
+        self.total    += invoice.total
+        self.invoices.append(invoice)
+
+    def table(self, title):
+        table=[["ID", "Time", "Subtotal", "PST", "GST", "Total", "Customer"]]
+        for i in self.invoices:
+            table.append([
+                i.id,
+                i.localTimeStr,
+                round(i.preTax, 2),
+                round(i.pst,    2),
+                round(i.gst,    2),
+                round(i.total,  2),
+                i.customer
+                ])
         table.append([
-            i.id,
-            i.localTimeStr,
-            round(i.preTax, 2),
-            round(i.pst, 2),
-            round(i.gst, 2),
-            round(i.total, 2),
-            i.customer
+            "Total",
+            "",
+            round(self.subtotal, 2),
+            round(self.pst,      2),
+            round(self.gst,      2),
+            round(self.total,    2)
             ])
-        subtotal+=i.preTax
-        pst+=i.pst
-        gst+=i.gst
-        total+=i.total
-    table.append([
-        "Total",
-        "",
-        round(subtotal, 2),
-        round(pst, 2),
-        round(gst, 2),
-        round(total, 2)
-        ])
-    return SingleTable(table, title).table
+        return SingleTable(table, title).table
 
 if(len(sys.argv)>2):
     month= int(sys.argv[2])
@@ -86,5 +96,21 @@ if(len(sys.argv)>1):
                 1, 0,0,0
                 )
             )
-    for (date, invoices) in sorted(groupInvoicesByDate(invoices).items()):
-        print(invoiceTable(date, invoices))
+def printInvoiceTables(invoices):
+    for (date, invoices) in sorted(groupInvoicesBy(invoices).items()):
+        print(invoices.table(date))
+
+def printInvoicesCSV(invoices):
+    print('"id", "customer", "date", "total"')
+    for invoice in sorted(invoices, key=lambda i:i.localDT):
+        print('"{0}","{1}","{2}",{3}'.format(invoice.id, invoice.customer, invoice.localDateStr, invoice.total))
+
+def printDaysCSV(invoices):
+    invs=groupInvoicesBy(invoices, "dayOfMonth")
+    for i in xrange(1,31):
+        if(i in invs):
+            inv=invs[i]
+            print('"{0}", "{1}", "{2}", "{3}", "{4}"'.format(i, inv.subtotal, inv.pst, inv.gst, inv.total))
+        else:
+            print('"{0}", "", "", "", ""'.format(i))
+printDaysCSV(invoices)
