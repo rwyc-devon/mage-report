@@ -81,21 +81,6 @@ class InvoiceGroup:
             ])
         return SingleTable(table, title).table
 
-if(len(sys.argv)>2):
-    month= int(sys.argv[2])
-if(len(sys.argv)>1):
-    year=int(sys.argv[1])
-    sys.stderr.write("Connecting to Magento...\n")
-    sys.stderr.flush()
-    mage=Mage(host=config["api"]["host"], port=80, user=config["api"]["user"], key=config["api"]["key"], pst=pst, gst=gst, timezone=localTZ)
-    invoices=mage.getInvoices(
-            datetime(year, month, 1, 0,0,0),
-            datetime(
-                year if month<12 else year+1,
-                ((month)%12)+1,
-                1, 0,0,0
-                )
-            )
 def printInvoiceTables(invoices):
     for (date, invoices) in sorted(groupInvoicesBy(invoices).items()):
         print(invoices.table(date))
@@ -107,10 +92,38 @@ def printInvoicesCSV(invoices):
 
 def printDaysCSV(invoices):
     invs=groupInvoicesBy(invoices, "dayOfMonth")
+    print('"day", "subtotal", "pst", "gst", "total"')
     for i in xrange(1,31):
         if(i in invs):
             inv=invs[i]
             print('"{0}", "{1}", "{2}", "{3}", "{4}"'.format(i, round(inv.subtotal, 2), round(inv.pst, 2), round(inv.gst, 2), round(inv.total)))
         else:
             print('"{0}", "", "", "", ""'.format(i))
-printDaysCSV(invoices)
+
+def usage():
+    print("Usage: {0} <cmd> <year> <month>".format(sys.argv[0]))
+    print('cmd can be "tables", "invoices", or "days"')
+
+if(len(sys.argv)>3):
+    month= int(sys.argv[3])
+    cmd=sys.argv[1]
+    year=int(sys.argv[2])
+    sys.stderr.write("Connecting to Magento...\n")
+    sys.stderr.flush()
+    mage=Mage(host=config["api"]["host"], port=80, user=config["api"]["user"], key=config["api"]["key"], pst=pst, gst=gst, timezone=localTZ)
+    invoices=mage.getInvoices(
+            datetime(year, month, 1, 0,0,0),
+            datetime(
+                year if month<12 else year+1,
+                ((month)%12)+1,
+                1, 0,0,0
+                )
+            )
+    cmds={"tables": printInvoiceTables, "invoices": printInvoicesCSV, "days": printDaysCSV}
+    if(cmd in cmds):
+        cmds[cmd](invoices)
+    else:
+        usage()
+else:
+    usage()
+#printDaysCSV(invoices)
