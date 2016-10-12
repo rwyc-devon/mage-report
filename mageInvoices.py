@@ -110,7 +110,7 @@ def printDaysCSV(invoices):
     for i in xrange(1,31):
         if(i in invs):
             inv=invs[i]
-            print('"{0}", "{1}", "{2}", "{3}", "{4}"'.format(i, inv.subtotal, inv.pst, inv.gst, inv.total))
+            print('"{0}", "{1}", "{2}", "{3}", "{4}"'.format(i, round(inv.subtotal, 2), round(inv.pst, 2), round(inv.gst, 2), round(inv.total)))
         else:
             print('"{0}", "", "", "", ""'.format(i))
 printDaysCSV(invoices)
