@@ -18,13 +18,18 @@ def config():
     xdg=os.getenv("XDG_CONFIG_HOME")
     xdg=home+"/.config" if xdg is None else xdg
     configFiles=[
+        "config.json",
         xdg+"/magento-client/config.json",
-        "/etc/magento-client/config.json"
+        "/etc/magento-client/config.json",
     ]
     for f in configFiles:
         if(os.path.isfile(f)):
             with open(f, "r") as fh:
                 return json.loads(fh.read())
+    print("please configure mage-report! edit config.sample.json and save it to one of the following locations:")
+    for f in configFiles:
+        print(f)
+    sys.exit(1)
     return {}
 config=config()
 localTZ=pytz.timezone(config["timezone"])

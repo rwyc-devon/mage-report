@@ -1,0 +1,12 @@
+{
+	"api": {
+		"host":"magento-host",
+		"user":"api-user",
+		"key":"api-key"
+	},
+	"taxes": {
+		"PST": 8,
+		"GST": 5
+	},
+	"timezone": "timezone"
+}
