@@ -116,16 +116,16 @@ if(len(sys.argv)>3):
     sys.stderr.write("Connecting to Magento...\n")
     sys.stderr.flush()
     mage=Mage(host=config["api"]["host"], port=80, user=config["api"]["user"], key=config["api"]["key"], pst=pst, gst=gst, timezone=localTZ)
-    invoices=mage.getInvoices(
-            datetime(year, month, 1, 0,0,0),
-            datetime(
-                year if month<12 else year+1,
-                ((month)%12)+1,
-                1, 0,0,0
-                )
-            )
     cmds={"tables": printInvoiceTables, "invoices": printInvoicesCSV, "days": printDaysCSV}
     if(cmd in cmds):
+        invoices=mage.getInvoicesByDate(
+                datetime(year, month, 1, 0,0,0),
+                datetime(
+                    year if month<12 else year+1,
+                    ((month)%12)+1,
+                    1, 0,0,0
+                    )
+                )
         cmds[cmd](invoices)
     else:
         usage()

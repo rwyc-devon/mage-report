@@ -26,7 +26,7 @@ class Mage:
                 "from": self.tz.localize(start).astimezone(gmt).strftime("%Y-%m-%d %H:%M:%S"),
                 "to":   self.tz.localize(end).astimezone(gmt).strftime("%Y-%m-%d %H:%M:%S")
                 }
-    def getInvoices(self, start, end, showProgress=True):
+    def getInvoicesByDate(self, start, end, showProgress=True):
         """
         Return a list of Invoice objects for the specified time period
         
