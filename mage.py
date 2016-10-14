@@ -49,10 +49,14 @@ class Mage:
             bar=progress.bar.IncrementalBar("Loading Invoices... (%(eta)ds)", max=len(invoices)+len(creditmemos));
         for i in invoices:
             out.append(self.getInvoice(i))
-            bar.next() if(showProgress) else False
+            if(showProgress):
+                bar.bar_suffix="| +{0} ".format(i)
+                bar.next()
         for i in creditmemos:
             out.append(self.getCreditmemo(i))
-            bar.next() if(showProgress) else False
+            if(showProgress):
+                bar.bar_suffix="| -{0} ".format(i)
+                bar.next()
         bar.finish() if(showProgress) else False
         return out
     def getInvoices(self, invoices, showProgress=True):
@@ -91,7 +95,8 @@ class Mage:
         """
         if(incrementId in self.invoices):
             return self.invoices[incrementId]
-        self.invoices[incrementId]=Invoice(self.api.sales_order_invoice.info(incrementId), pst=self.pst, gst=self.gst, mage=self, refund=False)
+        inv=self.api.sales_order_invoice.info(incrementId)
+        self.invoices[incrementId]=Invoice(inv, pst=self.pst, gst=self.gst, mage=self, refund=False)
         return self.invoices[incrementId]
     
     def getCreditmemo(self, incrementId):
