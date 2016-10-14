@@ -106,7 +106,7 @@ def printDaysCSV(invoices):
             print('"{0}", "", "", "", ""'.format(i))
 
 def usage():
-    print("Usage: {0} <cmd> <year> <month>".format(sys.argv[0]))
+    print("Usage:\n{0} <cmd> <year> <month>\n{0} <invoice_number> [invoice_number...]".format(sys.argv[0]))
     print('cmd can be "tables", "invoices", or "days"')
 
 if(len(sys.argv)>3):
