@@ -5,6 +5,7 @@ from magento import MagentoAPI
 from invoice import Invoice
 import progress.bar
 import sys
+import re
 class Mage:
     def __init__(self, host, port, user, key, pst, gst, timezone):
         self.api=MagentoAPI(host, port, user, key)
@@ -51,6 +52,27 @@ class Mage:
             bar.next() if(showProgress) else False
         for i in creditmemos:
             out.append(self.getCreditmemo(i))
+            bar.next() if(showProgress) else False
+        bar.finish() if(showProgress) else False
+        return out
+    def getInvoices(self, invoices, showProgress=True):
+        """
+        Return a list of Invoice objects, given a list of Invoice IDs
+
+        Keyword arguments:
+        invoices     -- a List of Invoice IDs
+        showProgress -- whether or not to display a progress bar (default True)
+        """
+        out=[]
+        if(showProgress):
+            bar=progress.bar.IncrementalBar("Loading Invoices... (%(eta)ds)", max=len(invoices));
+        for i in invoices:
+            matches=re.match(r'^([+-]?)(1\d{8})$', i).groups()
+            if(matches):
+                if(matches[0] == "-"):
+                    out.append(self.getCreditmemo(matches[1]))
+                else:
+                    out.append(self.getInvoice(matches[1]))
             bar.next() if(showProgress) else False
         bar.finish() if(showProgress) else False
         return out

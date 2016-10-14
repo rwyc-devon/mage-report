@@ -108,14 +108,22 @@ def printDaysCSV(invoices):
 def usage():
     print("Usage:\n{0} <cmd> <year> <month>\n{0} <invoice_number> [invoice_number...]".format(sys.argv[0]))
     print('cmd can be "tables", "invoices", or "days"')
+    print('invoice_number can be prefixed with "-" to indicate a credit memo, or optionally "+" to indicate an invoice')
 
-if(len(sys.argv)>3):
+def mkmage():
+    return Mage(host=config["api"]["host"], port=80, user=config["api"]["user"], key=config["api"]["key"], pst=pst, gst=gst, timezone=localTZ)
+
+if(re.match('^[+-]?1\d{8}$', sys.argv[1])):
+    mage=mkmage()
+    invoices=mage.getInvoices(sys.argv[1:])
+    printInvoicesCSV(invoices)
+elif(len(sys.argv)>3):
     month= int(sys.argv[3])
     cmd=sys.argv[1]
     year=int(sys.argv[2])
     sys.stderr.write("Connecting to Magento...\n")
     sys.stderr.flush()
-    mage=Mage(host=config["api"]["host"], port=80, user=config["api"]["user"], key=config["api"]["key"], pst=pst, gst=gst, timezone=localTZ)
+    mage=mkmage()
     cmds={"tables": printInvoiceTables, "invoices": printInvoicesCSV, "days": printDaysCSV}
     if(cmd in cmds):
         invoices=mage.getInvoicesByDate(
