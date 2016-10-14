@@ -93,7 +93,7 @@ def printInvoiceTables(invoices):
 def printInvoicesCSV(invoices):
     print('"id", "customer", "date", "total"')
     for invoice in sorted(invoices, key=lambda i:i.localDT):
-        print('"{0}","{1}","{2}",{3}'.format(invoice.id, invoice.customer, invoice.localDateStr, invoice.total))
+        print(u'"{0}","{1}","{2}",{3}'.format(invoice.id, invoice.customer, invoice.localDateStr, invoice.total))
 
 def printDaysCSV(invoices):
     invs=groupInvoicesBy(invoices, "dayOfMonth")
@@ -113,7 +113,7 @@ def usage():
 def mkmage():
     return Mage(host=config["api"]["host"], port=80, user=config["api"]["user"], key=config["api"]["key"], pst=pst, gst=gst, timezone=localTZ)
 
-if(re.match('^[+-]?1\d{8}$', sys.argv[1])):
+if(len(sys.argv) > 1 and re.match('^[+-]?1\d{8}$', sys.argv[1])):
     mage=mkmage()
     invoices=mage.getInvoices(sys.argv[1:])
     printInvoicesCSV(invoices)
