@@ -11,6 +11,8 @@ import sys
 import re
 from mage import Mage
 from invoice import Invoice, Item
+import tempfile
+import subprocess
 
 def config():
     home=os.getenv("HOME")
@@ -96,18 +98,31 @@ def printInvoicesCSV(invoices):
         print(u'"{0}","{1}","{2}",{3}'.format(invoice.id, invoice.customer, invoice.localDateStr, invoice.total))
 
 def printDaysCSV(invoices):
+    print(daysCSV(invoices))
+
+def daysCSV(invoices):
     invs=groupInvoicesBy(invoices, "dayOfMonth")
-    print('"day", "subtotal", "pst", "gst", "total"')
+    out='"day", "subtotal", "pst", "gst", "total"\n'
     for i in xrange(1,31):
         if(i in invs):
             inv=invs[i]
-            print('"{0}", "{1}", "{2}", "{3}", "{4}"'.format(i, round(inv.subtotal, 2), round(inv.pst, 2), round(inv.gst, 2), round(inv.total)))
+            out+=('"{0}", "{1}", "{2}", "{3}", "{4}"\n'.format(i, round(inv.subtotal, 2), round(inv.pst, 2), round(inv.gst, 2), round(inv.total)))
         else:
-            print('"{0}", "", "", "", ""'.format(i))
+            out+=('"{0}", "", "", "", ""\n'.format(i))
+    return out
+
+def libreofficeDays(invoices):
+    tmp=tempfile.mkstemp(".csv")
+    with open(tmp[1], "wb") as fh:
+        fh.write(daysCSV(invoices))
+        fh.close()
+        subprocess.call(["libreoffice", tmp[1]])
+    os.close(tmp[0])
+    os.remove(tmp[1])
 
 def usage():
     print("Usage:\n{0} <cmd> <year> <month>\n{0} <invoice_number> [invoice_number...]".format(sys.argv[0]))
-    print('cmd can be "tables", "invoices", or "days"')
+    print('cmd can be "tables", "invoices", "days", or "libreoffice"')
     print('invoice_number can be prefixed with "-" to indicate a credit memo, or optionally "+" to indicate an invoice')
 
 def mkmage():
@@ -124,7 +139,7 @@ elif(len(sys.argv)>3):
     sys.stderr.write("Connecting to Magento...\n")
     sys.stderr.flush()
     mage=mkmage()
-    cmds={"tables": printInvoiceTables, "invoices": printInvoicesCSV, "days": printDaysCSV}
+    cmds={"tables": printInvoiceTables, "invoices": printInvoicesCSV, "days": printDaysCSV, "libreoffice": libreofficeDays}
     if(cmd in cmds):
         invoices=mage.getInvoicesByDate(
                 datetime(year, month, 1, 0,0,0),
