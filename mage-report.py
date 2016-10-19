@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from __future__ import print_function
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 import pytz
 from terminaltables import SingleTable
 from decimal import *
@@ -87,6 +87,8 @@ class InvoiceGroup:
             round(self.total,    2)
             ])
         return SingleTable(table, title).table
+    def __getitem__(self, i):
+        return self.invoices[i]
 
 def printInvoiceTables(invoices):
     for (date, invoices) in sorted(groupInvoicesBy(invoices).items()):
@@ -100,15 +102,24 @@ def printInvoicesCSV(invoices):
 def printDaysCSV(invoices):
     print(daysCSV(invoices))
 
+def blankDays(days, start):
+    day=start
+    out=""
+    for n in xrange(0, days):
+        out+=('"{0}", "", "", "", ""\n'.format(day.strftime("%Y-%m-%d")))
+        day = day+timedelta(1)
+    return out
+
 def daysCSV(invoices):
-    invs=groupInvoicesBy(invoices, "dayOfMonth")
-    out='"day", "subtotal", "pst", "gst", "total"\n'
-    for i in xrange(1,31):
-        if(i in invs):
-            inv=invs[i]
-            out+=('"{0}", "{1}", "{2}", "{3}", "{4}"\n'.format(i, round(inv.subtotal, 2), round(inv.pst, 2), round(inv.gst, 2), round(inv.total)))
-        else:
-            out+=('"{0}", "", "", "", ""\n'.format(i))
+    invs=sorted(groupInvoicesBy(invoices, "localDateStr").items())
+    out='"date", "subtotal", "pst", "gst", "total"\n'
+    first=invs[0][1][0].localDT
+    prev=date(first.year, first.month, 1)
+    for datestr, inv in invs:
+        d=inv[0].localDT.date()
+        out+=blankDays((d-prev).days-1, prev+timedelta(1))
+        out+=('"{0}", "{1}", "{2}", "{3}", "{4}"\n'.format(inv[0].localDateStr, round(inv.subtotal, 2), round(inv.pst, 2), round(inv.gst, 2), round(inv.total)))
+        prev=d
     return out
 
 def libreofficeDays(invoices):
