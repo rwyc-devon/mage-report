@@ -86,7 +86,7 @@ class Invoice:
         """
         Return an integer representing the day of month for this invoice
         """
-        return self.date.day
+        return self.localDT.day
 
 class Item:
     def __init__(self, data, pst, gst):
