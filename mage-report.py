@@ -113,8 +113,10 @@ def blankDays(days, start):
 def daysCSV(invoices):
     invs=sorted(groupInvoicesBy(invoices, "localDateStr").items())
     out='"date", "subtotal", "pst", "gst", "total"\n'
-    first=invs[0][1][0].localDT
+    first=invs[0][1][0].localDT.date()
     prev=date(first.year, first.month, 1)
+    if(first != prev):
+        out+=blankDays(1, prev)
     for datestr, inv in invs:
         d=inv[0].localDT.date()
         out+=blankDays((d-prev).days-1, prev+timedelta(1))
