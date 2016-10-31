@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 from __future__ import print_function
 from datetime import datetime, date, timedelta
 import pytz
@@ -97,7 +97,8 @@ def printInvoiceTables(invoices):
 def printInvoicesCSV(invoices):
     print('"id", "customer", "date", "total"')
     for invoice in sorted(invoices, key=lambda i:i.localDT):
-        print(u'"{0}","{1}","{2}",{3}'.format(invoice.id, invoice.customer, invoice.localDateStr, invoice.total))
+        out=u'"{0}","{1}","{2}",{3}'.format(invoice.id, invoice.customer, invoice.localDateStr, invoice.total)
+        print(out)
 
 def printDaysCSV(invoices):
     print(daysCSV(invoices))

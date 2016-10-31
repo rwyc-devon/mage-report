@@ -90,8 +90,8 @@ class Invoice:
 
 class Item:
     def __init__(self, data, pst, gst):
-        self.tax=Decimal(data["base_tax_amount"] or 0, 4)
-        self.total=Decimal(data["base_row_total"] or 0, 4)
+        self.tax=Decimal(data["base_tax_amount"] or 0)
+        self.total=Decimal(data["base_row_total"] or 0)
         self.pstRate=Decimal(pst)
         self.gstRate=Decimal(gst)
 
