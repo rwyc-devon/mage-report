@@ -106,7 +106,7 @@ def printDaysCSV(invoices):
 def blankDays(days, start):
     day=start
     out=""
-    for n in xrange(0, days):
+    for n in range(0, days):
         out+=('"{0}", "", "", "", ""\n'.format(day.strftime("%Y-%m-%d")))
         day = day+timedelta(1)
     return out
