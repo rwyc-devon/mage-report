@@ -127,7 +127,7 @@ def daysCSV(invoices):
 
 def libreofficeDays(invoices):
     tmp=tempfile.mkstemp(".csv")
-    with open(tmp[1], "wb") as fh:
+    with open(tmp[1], "w") as fh:
         fh.write(daysCSV(invoices))
         fh.close()
         subprocess.call(["libreoffice", tmp[1]])
