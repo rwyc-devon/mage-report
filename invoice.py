@@ -28,8 +28,8 @@ class Invoice:
         self.tax      = Decimal(data["base_tax_amount"])
         self.total    = Decimal(data["base_grand_total"])
         self.id       = data["increment_id"]
-        #if subtotal is 0, then this is an "adjustment".
-        if(self.subtotal==0):
+        #if pre-tax total is 0, then this is an "adjustment".
+        if(self.preTax==0):
             self.subtotal=self.total
             self.preTax=self.total
         #set customer name
